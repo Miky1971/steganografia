@@ -56,6 +56,7 @@
             button_FileFrom.TabIndex = 0;
             button_FileFrom.Text = "...";
             button_FileFrom.UseVisualStyleBackColor = true;
+            button_FileFrom.Click += button_FileFrom_Click;
             // 
             // label_FileFrom
             // 
@@ -105,6 +106,7 @@
             button_FileTo.TabIndex = 4;
             button_FileTo.Text = "...";
             button_FileTo.UseVisualStyleBackColor = true;
+            button_FileTo.Click += button_FileTo_Click;
             // 
             // textBox_Pass
             // 
@@ -130,16 +132,18 @@
             button_Pass.TabIndex = 7;
             button_Pass.Text = "👁";
             button_Pass.UseVisualStyleBackColor = true;
+            button_Pass.Click += button_Pass_Click;
             // 
             // checkBox_Encrypt
             // 
             checkBox_Encrypt.AutoSize = true;
             checkBox_Encrypt.Location = new Point(93, 265);
             checkBox_Encrypt.Name = "checkBox_Encrypt";
-            checkBox_Encrypt.Size = new Size(112, 19);
+            checkBox_Encrypt.Size = new Size(119, 19);
             checkBox_Encrypt.TabIndex = 10;
-            checkBox_Encrypt.Text = "Szyfrować tekst?";
+            checkBox_Encrypt.Text = "Tekst szyfrowany?";
             checkBox_Encrypt.UseVisualStyleBackColor = true;
+            checkBox_Encrypt.CheckedChanged += checkBox_Encrypt_CheckedChanged;
             // 
             // textBox_Text
             // 
@@ -177,6 +181,7 @@
             button_ReadText.TabIndex = 14;
             button_ReadText.Text = "Odczytaj tekst";
             button_ReadText.UseVisualStyleBackColor = true;
+            button_ReadText.Click += button_ReadText_Click;
             // 
             // openFileDialog_FileFrom
             // 
