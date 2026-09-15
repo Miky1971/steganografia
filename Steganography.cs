@@ -38,7 +38,7 @@ public static class Steganography
             byte pixelR = pixel.R;
             byte pixelG = pixel.G;
             byte pixelB = pixel.B;
-            
+
             switch (positionInPixel)
             {
                 case 0:
@@ -59,99 +59,48 @@ public static class Steganography
     }
     public static byte[] RevealText(Bitmap sourceImage)
     {
-        byte[] artifactFound = new byte[artifact.Length];
-        byte bajt = 0;
-        for (int i = 0; i < (artifactFound.Length * 8); i++)
-        {
-            int numberPixel = i / 3;
-            int positionInPixel = i % 3;
-
-            int pixelWidth = numberPixel % sourceImage.Width;
-            int pixelHeight = numberPixel / sourceImage.Width;
-
-            Color pixel = sourceImage.GetPixel(pixelWidth, pixelHeight);
-            switch (positionInPixel)
-            {
-                case 0:
-                    bajt = (byte)((bajt << 1) | (pixel.R & 1));
-                    break;
-                case 1:
-                    bajt = (byte)((bajt << 1) | (pixel.G & 1));
-                    break;
-                case 2:
-                    bajt = (byte)((bajt << 1) | (pixel.B & 1));
-                    break;
-            }
-            if (i % 8 == 7)
-            {
-                artifactFound[i / 8] = bajt;
-                bajt = 0;
-            }
-        }
+        byte[] artifactFound = PartOfImage(sourceImage, 0, artifact.Length);
         if (!artifactFound.SequenceEqual(artifact)) return Encoding.UTF8.GetBytes("W tym obrazie brak tekstu wstawionego przez program Steganografia");
-        
-        byte[] legthText = new byte[4];
-        bajt = 0;
-        for (int i = (artifact.Length * 8); i < ((artifact.Length + legthText.Length) * 8); i++)
-        {
-            int numberPixel = i / 3;
-            int positionInPixel = i % 3;
 
-            int pixelWidth = numberPixel % sourceImage.Width;
-            int pixelHeight = numberPixel / sourceImage.Width;
+        byte[] legthText = PartOfImage(sourceImage, artifact.Length, 4);
+        int countBajtsText = BitConverter.ToInt32(legthText, 0);
 
-            Color pixel = sourceImage.GetPixel(pixelWidth, pixelHeight);
-            switch (positionInPixel)
-            {
-                case 0:
-                    bajt = (byte)((bajt << 1) | (pixel.R & 1));
-                    break;
-                case 1:
-                    bajt = (byte)((bajt << 1) | (pixel.G & 1));
-                    break;
-                case 2:
-                    bajt = (byte)((bajt << 1) | (pixel.B & 1));
-                    break;
-            }
-            if (i % 8 == 7)
-            {
-                legthText[(i / 8) - artifact.Length] = bajt;
-                bajt = 0;
-            }
-        }
-        int countBajtsToRead = BitConverter.ToInt32(legthText, 0);
-
-        byte[] encryptedData = new byte[countBajtsToRead];
-        int countBitsToRead = (artifact.Length + legthText.Length + countBajtsToRead) * 8;
-        bajt = 0;
-        for (int i = ((artifact.Length + legthText.Length) * 8); i < countBitsToRead; i++)
-        {
-            int numberPixel = i / 3;
-            int positionInPixel = i % 3;
-
-            int pixelWidth = numberPixel % sourceImage.Width;
-            int pixelHeight = numberPixel / sourceImage.Width;
-
-            Color pixel = sourceImage.GetPixel(pixelWidth, pixelHeight);
-            switch (positionInPixel)
-            {
-                case 0:
-                    bajt = (byte)((bajt << 1) | (pixel.R & 1));
-                    break;
-                case 1:
-                    bajt = (byte)((bajt << 1) | (pixel.G & 1));
-                    break;
-                case 2:
-                    bajt = (byte)((bajt << 1) | (pixel.B & 1));
-                    break;
-            }
-            if (i % 8 == 7)
-            {
-                encryptedData[(i / 8) - (artifact.Length + legthText.Length)] = bajt;
-                bajt = 0;
-            }
-        }
+        byte[] encryptedData = PartOfImage(sourceImage, (artifact.Length + legthText.Length), countBajtsText);
         return encryptedData;
+    }
+
+    public static byte[] PartOfImage(Bitmap sourceImage, int fromBajt, int countBajts)
+    {
+        byte[] partImage = new byte[countBajts];
+        byte bajt = 0;
+        for (int i = (fromBajt * 8); i < ((fromBajt + countBajts) * 8); i++)
+        {
+            int numberPixel = i / 3;
+            int positionInPixel = i % 3;
+
+            int pixelWidth = numberPixel % sourceImage.Width;
+            int pixelHeight = numberPixel / sourceImage.Width;
+
+            Color pixel = sourceImage.GetPixel(pixelWidth, pixelHeight);
+            switch (positionInPixel)
+            {
+                case 0:
+                    bajt = (byte) ((bajt << 1) | (pixel.R & 1));
+                    break;
+                case 1:
+                    bajt = (byte) ((bajt << 1) | (pixel.G & 1));
+                    break;
+                case 2:
+                    bajt = (byte) ((bajt << 1) | (pixel.B & 1));
+                    break;
+            }
+            if (i % 8 == 7)
+            {
+                partImage[(i / 8) - fromBajt] = bajt;
+                bajt = 0;
+            }
+        }
+        return partImage;
     }
 }
 
