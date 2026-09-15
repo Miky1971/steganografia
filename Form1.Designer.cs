@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             button_FileFrom = new Button();
             label_FileFrom = new Label();
             textBox_FileFrom = new TextBox();
@@ -73,12 +74,14 @@
             textBox_FileFrom.Name = "textBox_FileFrom";
             textBox_FileFrom.Size = new Size(391, 23);
             textBox_FileFrom.TabIndex = 2;
+            textBox_FileFrom.Leave += textBox_FileFrom_Leave;
             // 
             // pictureBox_FileFrom
             // 
             pictureBox_FileFrom.Location = new Point(531, 11);
             pictureBox_FileFrom.Name = "pictureBox_FileFrom";
             pictureBox_FileFrom.Size = new Size(655, 342);
+            pictureBox_FileFrom.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox_FileFrom.TabIndex = 3;
             pictureBox_FileFrom.TabStop = false;
             // 
@@ -186,6 +189,11 @@
             // openFileDialog_FileFrom
             // 
             openFileDialog_FileFrom.FileName = "openFileDialog1";
+            openFileDialog_FileFrom.Filter = "\"Pliki obrazów|*.png;*.bmp;*.jpg;*.jpeg\"";
+            // 
+            // saveFileDialog_FileTo
+            // 
+            saveFileDialog_FileTo.Filter = "\"Pliki obrazów|*.png;*.bmp\"";
             // 
             // Form1
             // 
@@ -207,8 +215,9 @@
             Controls.Add(textBox_FileFrom);
             Controls.Add(label_FileFrom);
             Controls.Add(button_FileFrom);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
-            Text = "Form1";
+            Text = "Steganografia";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox_FileFrom).EndInit();
             ResumeLayout(false);

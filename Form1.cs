@@ -19,6 +19,8 @@ namespace steganografia
             if (openFileDialog_FileFrom.ShowDialog() == DialogResult.OK)
             {
                 textBox_FileFrom.Text = openFileDialog_FileFrom.FileName;
+                pictureBox_FileFrom.Image = Image.FromFile(openFileDialog_FileFrom.FileName);
+
             }
         }
 
@@ -32,14 +34,14 @@ namespace steganografia
 
         private bool areAllFieldsFilledIn()
         {
-            if (textBox_FileFrom.Text == string.Empty || textBox_Text.Text == string.Empty || pictureBox_FileFrom.Image == null 
+            if (textBox_FileFrom.Text == string.Empty || pictureBox_FileFrom.Image == null 
                 || (checkBox_Encrypt.Checked == true && textBox_Pass.Text == string.Empty)) return false;
             else return true;
         }
 
         private void button_WriteText_Click(object sender, EventArgs e)
         {
-            if (!areAllFieldsFilledIn() || textBox_FileTo.Text == string.Empty)
+            if (!areAllFieldsFilledIn() || textBox_Text.Text == string.Empty || textBox_FileTo.Text == string.Empty)
             {
                 MessageBox.Show("Wypełnij wszystkie pola.");
                 return;
@@ -50,7 +52,7 @@ namespace steganografia
                 byte[] result = new byte[plaintext.Length];
                 if (checkBox_Encrypt.Checked) result = Encryptor.EncryptBytes(plaintext, textBox_Pass.Text);
                 else result = plaintext;
-                if (Steganography.HideText(textBox_FileFrom.Text, textBox_FileTo.Text, result)) 
+                if (Steganography.HideText((Bitmap)pictureBox_FileFrom.Image, textBox_FileTo.Text, result)) 
                     MessageBox.Show($"Tekst ukryto w obrazku:\n{textBox_FileFrom.Text} -> {textBox_FileTo.Text}");
                 else MessageBox.Show($"Błąd ukrywania tekstu do obrazka:\n{textBox_FileFrom.Text} -> {textBox_FileTo.Text}");
             }
@@ -68,13 +70,12 @@ namespace steganografia
         {
             if (!areAllFieldsFilledIn())
             {
-                MessageBox.Show("Wypełnij wszystkie pola.");
+                MessageBox.Show("Wskaż obrazek do odczytu tekstu i ew. hasło.");
                 return;
             }
             try
             {
-                // tutaj będzie metoda desteganografii
-                byte[] encryptedData = Steganography.RevealText(textBox_FileFrom.Text);
+                byte[] encryptedData = Steganography.RevealText((Bitmap)pictureBox_FileFrom.Image);
                 byte[] result = new byte[encryptedData.Length];
                 if (checkBox_Encrypt.Checked) result = Encryptor.DecryptBytes(encryptedData, textBox_Pass.Text);
                 else result = encryptedData;
@@ -114,5 +115,24 @@ namespace steganografia
             textBox_Pass.Enabled = checkBox_Encrypt.Checked;
             button_Pass.Enabled = checkBox_Encrypt.Checked;
         }
+
+        private void textBox_FileFrom_Leave(object sender, EventArgs e)
+        {
+            if (textBox_FileFrom.Text == string.Empty)
+            {
+                if (pictureBox_FileFrom.Image != null)
+                {
+                    pictureBox_FileFrom.Image.Dispose();
+                    pictureBox_FileFrom.Image = null;
+                }
+            }
+            else
+                try
+                {
+                    pictureBox_FileFrom.Image = Image.FromFile(textBox_FileFrom.Text);
+                }
+                catch { textBox_FileFrom.Text = string.Empty; }
+        }
+
     }
 }
